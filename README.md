@@ -1,0 +1,2 @@
+# macossetup
+macos up..
