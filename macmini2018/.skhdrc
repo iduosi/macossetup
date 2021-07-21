@@ -1,0 +1,224 @@
+# ################################################################ #
+# THE FOLLOWING IS AN EXPLANATION OF THE GRAMMAR THAT SKHD PARSES. #
+# FOR SIMPLE EXAMPLE MAPPINGS LOOK FURTHER DOWN THIS FILE..////#
+# ################################################################ #
+
+# A list of all built-in modifier and literal keywords can
+# be found at https://github.com/koekeishiya/skhd/issues/1
+#
+# A hotkey is written according to the following rules:
+#
+#/ hotkey/// = <mode> '<' <action> | <action>
+#
+#/ mode//// = 'name of mode' | <mode> ',' <mode>
+#
+#/ action/// = <keysym> '[' <proc_map_lst> ']' | <keysym> '->' '[' <proc_map_lst> ']'
+#/////////<keysym> ':' <command>/////| <keysym> '->' ':' <command>
+#/////////<keysym> ';' <mode>////// | <keysym> '->' ';' <mode>
+#
+#/ keysym/// = <mod> '-' <key> | <key>
+#
+#/ mod/////= 'modifier keyword' | <mod> '+' <mod>
+#
+#/ key/////= <literal> | <keycode>
+#
+#/ literal///= 'single letter or built-in keyword'
+#
+#/ keycode///= 'apple keyboard kVK_<Key> values (0x3C)'
+#
+#/ proc_map_lst = * <proc_map>
+#
+#/ proc_map// = <string> ':' <command> | <string>// '~' |
+#/////////'*'///':' <command> | '*'/////'~'
+#
+#/ string/// = '"' 'sequence of characters' '"'
+#
+#/ command///= command is executed through '$SHELL -c' and
+#/////////follows valid shell syntax. if the $SHELL environment
+#/////////variable is not set, it will default to '/bin/bash'.
+#/////////when bash is used, the ';' delimeter can be specified
+#/////////to chain commands.
+#
+#/////////to allow a command to extend into multiple lines,
+#/////////prepend '\' at the end of the previous line.
+#
+#/////////an EOL character signifies the end of the bind.
+#
+#/ ->///// = keypress is not consumed by skhd
+#
+#/ *//////= matches every application not specified in <proc_map_lst>
+#
+#/ ~//////= application is unbound and keypress is forwarded per usual, when specified in a <proc_map>
+#
+# A mode is declared according to the following rules:
+#
+#/ mode_decl = '::' <name> '@' ':' <command> | '::' <name> ':' <command> |
+#/////// '::' <name> '@'/////// | '::' <name>
+#
+#/ name///= desired name for this mode,
+#
+#/ @//// = capture keypresses regardless of being bound to an action
+#
+#/ command/ = command is executed through '$SHELL -c' and
+#/////// follows valid shell syntax. if the $SHELL environment
+#/////// variable is not set, it will default to '/bin/bash'.
+#/////// when bash is used, the ';' delimeter can be specified
+#/////// to chain commands.
+#
+#/////// to allow a command to extend into multiple lines,
+#/////// prepend '\' at the end of the previous line.
+#
+#/////// an EOL character signifies the end of the bind.
+
+# ############################################################### #
+# THE FOLLOWING SECTION CONTAIN SIMPLE MAPPINGS DEMONSTRATING HOW #
+# TO INTERACT WITH THE YABAI WM. THESE ARE SUPPOSED TO BE USED AS #
+# A REFERENCE ONLY, WHEN MAKING YOUR OWN CONFIGURATION../////#
+# ############################################################### #
+
+
+# ############################################################### #
+# README:
+#/ display// 显示器(不同的显示器)
+#/ space/// 桌面(独立的桌面空间)
+#/ window///窗口(应用的窗口)
+# ############################################################### #
+
+#
+# 服务操作
+###
+
+# 重启yabai服务
+ctrl + cmd - r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
+
+# 重启skhd服务
+ctrl + cmd - o : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.skhd"
+
+# 重启spacebar服务
+ctrl + cmd - t : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.spacebar"
+
+
+#
+# 空间操作
+###
+
+# 创建新空间，并聚焦至【这个创建的空间】
+shift + ctrl - n : yabai -m space --create && index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 0))[-1].index')" && yabai -m space --focus "${index}"
+
+# 创建新空间，并将【活动窗口】移动至【这个创建的空间】且聚焦至【这个创建的空间】
+ctrl - n : yabai -m space --create && index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 0))[-1].index')" && yabai -m window --space "${index}" && yabai -m space --focus "${index}"
+
+# 销毁当前空间
+ctrl - w : yabai -m space --destroy
+
+# 切换聚焦的空间
+ctrl - 1 : yabai -m space --focus 1
+shift + ctrl - 1 : yabai -m window --space 1 && yabai -m space --focus 1
+ctrl - 2 : yabai -m space --focus 2
+shift + ctrl - 2 : yabai -m window --space 2 && yabai -m space --focus 2
+ctrl - 3 : yabai -m space --focus 3
+shift + ctrl - 3 : yabai -m window --space 3 && yabai -m space --focus 3
+ctrl - 4 : yabai -m space --focus 4
+shift + ctrl - 4 : yabai -m window --space 4 && yabai -m space --focus 4
+ctrl - 5 : yabai -m space --focus 5
+shift + ctrl - 5 : yabai -m window --space 5 && yabai -m space --focus 5
+ctrl - 6 : yabai -m space --focus 6
+shift + ctrl - 6 : yabai -m window --space 6 && yabai -m space --focus 6
+ctrl - 7 : yabai -m space --focus 7
+shift + ctrl - 7 : yabai -m window --space 7 && yabai -m space --focus 7
+ctrl - 8 : yabai -m space --focus 8
+shift + ctrl - 8 : yabai -m window --space 8 && yabai -m space --focus 8
+ctrl - 9 : yabai -m space --focus 9
+shift + ctrl - 9 : yabai -m window --space 9 && yabai -m space --focus 9
+ctrl - 0 : yabai -m space --focus 10
+shift + ctrl - 0 : yabai -m window --space 10 && yabai -m space --focus 10
+
+
+ctrl - i : index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 1))[-1].index')" && yabai -m space --focus "${index}"
+ctrl - o : index="$(yabai -m query --spaces --display | jq 'map(select(."native-fullscreen" == 0))[-1].index')" && yabai -m space --focus "${index}"
+
+# 切换聚焦到上一个的空间
+ctrl - j : yabai -m space --focus prev
+# 切换聚焦到下一个的空间
+ctrl - k : yabai -m space --focus next
+
+
+#
+# 窗口编排操作
+###
+
+# 窗口排列模式变更：平铺模式和浮动模式的相互切换
+ctrl + alt - s : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "bsp" end')
+
+# 窗口排列模式变更：平铺模式和浮动模式的相互切换
+# 0x30 --- TAB
+ctrl + alt - 0x30 : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "stack" then "float" else "stack" end')
+
+#
+# 堆叠模式：所有的窗口都是当前空间的最大化窗口，窗口一层叠一层
+###
+
+#
+# 浮动模式：切换为浮动模式且最大化当前活动窗口
+###
+
+# 当前空间的最大化窗口
+# <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
+ctrl + cmd + alt - s : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "float" end') && yabai -m window --grid 1:1:0:0:1:1
+
+# 当前空间的靠左占比2/3大小的窗口
+# <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
+ctrl + cmd + alt - w : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "float" end') && yabai -m window --grid 3:3:0:0:2:3
+
+# 当前空间的靠右占比2/3大小的窗口
+# <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
+ctrl + cmd + alt - e : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "float" end') && yabai -m window --grid 3:3:1:0:2:3
+
+# 当前空间的靠上占比1/2大小的窗口
+# <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
+shift + ctrl + cmd + alt - w : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "float" end') && yabai -m window --grid 4:4:0:0:4:2
+
+# 当前空间的靠下占比1/2大小的窗口
+# <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
+shift + ctrl + cmd + alt - e : yabai -m space --layout $(yabai -m query --spaces --space | jq -r 'if .type == "bsp" then "float" else "float" end') && yabai -m window --grid 4:4:0:2:4:2
+
+
+# 放大窗口：向右，每一次50
+# 0x18 --- -
+ctrl - 0x18 : yabai -m window --resize right:50:0
+shift + ctrl - 0x18 : yabai -m window --resize right:-50:0
+
+# 放小窗口：向右，每一次50
+# 0x1B --- =
+ctrl - 0x1B : yabai -m window --resize left:50:0
+shift + ctrl - 0x1B : yabai -m window --resize left:-50:0
+
+
+#
+# 窗口 + 空间操作
+###
+
+# 切换窗口：独立空间下的全屏
+ctrl + alt - x : yabai -m window --toggle native-fullscreen
+
+
+# 交换窗口
+# alt - s : yabai -m window --swap recent
+# shift + alt - h : yabai -m window --swap west
+# shift + alt - j : yabai -m window --swap south
+# shift + alt - k : yabai -m window --swap north
+# shift + alt - l : yabai -m window --swap east
+
+# move window
+# shift + cmd - h : yabai -m window --warp west
+# shift + cmd - j : yabai -m window --warp south
+# shift + cmd - k : yabai -m window --warp north
+# shift + cmd - l : yabai -m window --warp east
+
+
+# 切换窗口：split type
+# alt - d : yabai -m window --toggle split
+
+
+# 90度旋转窗口
+# ctrl - v : yabai -m space --rotate 90
