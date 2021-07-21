@@ -1,0 +1,12 @@
+### IDE
+.idea
+.vscode
+
+### General macOS template
+.DS_Store
+.Trashes
+
+### Local file
+*backup
+*disabled
+.LOG
